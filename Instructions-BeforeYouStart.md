@@ -1,6 +1,6 @@
 ## GWAS-QC-AI-Report
 
-*A plain-English tour of what the project does, why it matters, and where it is heading*
+*A simple tour of what the project does, why it matters, and where it is heading*
 
 ---
 
@@ -16,8 +16,18 @@ Before any real discovery can happen, scientists must
 Traditionally these steps are glued together with ad-hoc scripts on individual laptops or lab servers. Results are hard to reproduce, QC is manual, and junior researchers spend days writing the same reports over and over.
 
 ---
+## 2  Key concepts in 60 seconds
 
-### 2.  What does *GWAS-QC-AI-Report* change?
+| Term                     | Plain‑English meaning                                                       | Everyday analogy                                                   |
+| ------------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Variant (SNP)**        | A single letter in the DNA script that differs between people               | A spelling difference like “colour/color”                          |
+| **Quality Control (QC)** | Filtering out unreliable data (e.g., low read depth, sample swaps)          | Removing blurry photos before analysis                             |
+| **GWAS**                 | Statistical test that links variants to traits                              | Surveying many people to ask which spelling correlates with accent |
+| **Synthetic Data**       | Computer‑generated, non‑identifiable DNA that mimics real patterns          | Crash‑test dummies instead of real passengers                      |
+| **LLM‑assisted QC**      | Using large language models to parse logs, detect errors, and suggest fixes | A bilingual assistant that spots translation glitches instantly    |
+
+---
+### 3.  What does *GWAS-QC-AI-Report* change?
 
 | Old workflow                                           | With our project                                                      |
 | ------------------------------------------------------ | --------------------------------------------------------------------- |
@@ -30,7 +40,7 @@ Traditionally these steps are glued together with ad-hoc scripts on individual l
 
 ---
 
-### 3.  A gentle step-by-step tour
+### 4.  A gentle step-by-step tour
 
 | Stage                             | What happens (non-technical)                                                                              | Key tool                   | Passes **to next stage**               |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------- | -------------------------------------- |
@@ -46,7 +56,7 @@ All steps are scheduled by **Nextflow**, the “conductor” that fires each tas
 
 ---
 
-### 4.  Why this matters
+### 5.  Why this matters
 
 * **Reproducibility** – everyone runs the same code, same environment, same numbers.
 * **Time saving** – a week of QC+report writing shrinks to one overnight run.
@@ -55,52 +65,7 @@ All steps are scheduled by **Nextflow**, the “conductor” that fires each tas
 
 ---
 
-### 5.  What’s inside the repository?
-
-* `src/` – four focused Python scripts (QC, plots, PRS, report).
-* `workflow/` – one Nextflow file describing the order of jobs.
-* `environment.yml` – one Conda spec; `conda env create -f …` and you’re set.
-* `tests/` – Pytest sanity checks; failures show up in the GitHub badge.
-* `report_template/` – Markdown + Jinja2 layout the AI fills in.
-
----
-
-### 6.  Quick-start demo (local machine)
-
-```bash
-# Clone & create environment
-git clone https://github.com/francott7/GWAS-QC-AI-report.git
-cd GWAS-QC-AI-report
-conda env create -f environment.yml      #  ➜ env name: gwas-qc
-conda activate gwas-qc
-
-# Add your OpenAI key (optional for AI commentary)
-echo '{ "openai_api_key": "sk-..."}' > config.json
-
-# Run the toy dataset (local profile)
-nextflow run workflow/main.nf \
-  --vcf data/chr22_demo.vcf.gz \
-  --gwas data/demo_gwas_stats.tsv \
-  --outdir dist/
-
-open dist/report_*.pdf
-```
-
----
-
-### 7.  Current limitations & roadmap
-
-| Limitation in v0.1                 | Planned enhancement                                         |
-| ---------------------------------- | ----------------------------------------------------------- |
-| No Docker / Singularity image yet. | Provide official container & `-profile docker` flag (v0.2). |
-| Local machine or HPC only.         | Terraform modules for AWS EMR / GCP Dataproc (v0.3).        |
-| Single-ancestry PRS tested.        | Multi-ancestry PRS-CSx, Tractor pipeline.                   |
-| PRS method fixed to PRS-CS.        | Plug-in architecture for LDpred2, Lassosum2.                |
-| Minimal UI (PDF only).             | Streamlit dashboard for drag-and-drop runs.                 |
-
----
-
-### 8.  Who should care?
+### 6.  Who should care?
 
 * **Genetics labs** needing turnkey QC/PRS without writing code.
 * **Data-science teams** wanting genetic risk variables inside models.
@@ -109,10 +74,10 @@ open dist/report_*.pdf
 
 ---
 
-### 9.  Final take-away
+### 7.  Final take-away
 
 *GWAS-QC-AI-Report* bridges modern engineering practice and cutting-edge genomics.
 It turns messy DNA files into clear, reproducible insights—automatically and in language anyone can understand.
 Containers and cloud scale are on the way, but you can already run the full workflow today with nothing more than Conda and Nextflow.
 
-Fork, star ⭐, or raise an issue—contributions are welcome!
+This project is written by researcher with non-genetic/biological backgrounds, who is also trying to apply AI in this field:) Fork, star ⭐, or raise an issue—contributions are welcome!
