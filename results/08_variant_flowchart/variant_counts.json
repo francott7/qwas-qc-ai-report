@@ -1,0 +1,8 @@
+{
+  "Raw VCF": 1103547,
+  "After QC": 1103547,
+  "After Filtering": 55043,
+  "After Clumping": 55043,
+  "Causal SNPs": 50,
+  "PRS Input": 50
+}

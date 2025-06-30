@@ -1,0 +1,12 @@
+flowchart LR
+  S0["Raw VCF\n1,103,547 variants"]
+  S1["After QC\n1,103,547 variants"]
+  S2["After Filtering\n55,043 variants"]
+  S3["After Clumping\n55,043 variants"]
+  S4["Causal SNPs\n50 variants"]
+  S5["PRS Input\n50 variants"]
+  S0 --> S1
+  S1 --> S2
+  S2 --> S3
+  S3 --> S4
+  S4 --> S5

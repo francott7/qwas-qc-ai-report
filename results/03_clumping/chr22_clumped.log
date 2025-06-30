@@ -1,0 +1,27 @@
+PLINK v1.9.0-b.8 64-bit (22 Oct 2024)
+Options in effect:
+  --bfile data/processed/chr22_harmonized
+  --clump data/raw/gwas_effect_sizes.txt
+  --clump-kb 250
+  --clump-p1 0.05
+  --clump-r2 0.1
+  --out results/03_clumping/chr22_clumped
+
+Hostname: 192.168.1.2
+Working directory: /Users/emi/Desktop/study/PhD/project/gwas-qc-report
+Start time: Tue Jun 24 00:25:47 2025
+
+Random number seed: 1750695947
+32768 MB RAM detected; reserving 16384 MB for main workspace.
+1103547 variants loaded from .bim file.
+2504 people (0 males, 0 females, 2504 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to results/03_clumping/chr22_clumped.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 2504 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.99984.
+1103547 variants and 2504 people pass filters and QC.
+Note: No phenotypes present.
+Warning: No significant --clump results.  Skipping.
+
+End time: Tue Jun 24 00:25:48 2025
