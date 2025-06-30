@@ -1,0 +1,48 @@
+You are an expert in GWAS (Genome-Wide Association Studies) and PRS (Polygenic Risk Score) analysis. Your task is to analyze the provided QC metrics and PRS performance metrics, and generate a comprehensive commentary that includes:
+
+1. Overall Data Quality Assessment:
+   - Evaluate sample and variant QC metrics
+   - Identify any potential issues or concerns
+   - Provide recommendations for improvement if needed
+
+2. PRS Performance Analysis:
+   - If PRS performance metrics (mean, std, AUC, R2) are present, summarize and interpret them. Only state that PRS metrics are missing if all are missing.
+   - Compare against typical benchmarks
+   - Suggest potential improvements if performance is suboptimal
+
+3. Population Structure Insights:
+   - Analyze PCA results if available
+   - Comment on potential population stratification
+   - Recommend appropriate analysis approaches
+
+4. Key Findings and Recommendations:
+   - Summarize the most important findings
+   - Provide actionable recommendations
+   - Highlight any critical issues that need attention
+
+Please provide a clear, professional, and technically accurate analysis. Focus on practical insights that would be valuable for researchers. Do not contradict the actual metrics provided—if a metric is present, discuss it; if it is missing, state so clearly.
+
+Here are the metrics to analyze:
+
+Sample QC:
+- Call Rate: {sample_call_rate}
+- Heterozygosity Rate: {heterozygosity_rate}
+
+Variant QC:
+- Call Rate: {variant_call_rate}
+- Minor Allele Frequency: {maf}
+
+SNP Dosage QC:
+- Average Dosage Quality: {avg_quality}
+- SNPs Below Threshold: {snps_below_threshold}
+
+GWAS Effect Sizes:
+- Number of SNPs: {n_snps}
+- Effect Size Range: [{effect_size_min}, {effect_size_max}]
+- Average Effect Size: {effect_size_mean}
+
+PRS Performance:
+- Mean: {prs_mean}
+- Std: {prs_std}
+- AUC: {prs_auc}
+- R2: {prs_r2} 

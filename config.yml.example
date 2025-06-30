@@ -1,0 +1,7 @@
+# Example configuration for GWAS-QC-AI-report
+# Copy to config.yml and edit as needed
+
+call_rate_threshold: 0.95
+maf_threshold: 0.01
+hwe_threshold: 1e-6
+dosage_threshold: 0.1 

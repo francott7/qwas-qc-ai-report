@@ -1,0 +1,56 @@
+params {
+    // Input parameters
+    input_vcf = "data/raw/ALL.chr22.phase3_shapeit2_mvncall_integrated_v5b.20130502.genotypes.vcf.gz"
+    phenotype_file = "data/raw/phenotypes.txt"
+    gwas_effect_sizes = "data/raw/gwas_effect_sizes.txt"  // GWAS summary statistics
+    ref_dir = "data/raw"
+    output_dir = "results"
+    
+    // QC parameters
+    maf_threshold = 0.01
+    call_rate_threshold = 0.95
+    hwe_threshold = 1e-6
+    
+    // SNP dosage parameters
+    dosage_format = "DS"  // DS for dosage, GT for genotype
+    dosage_threshold = 0.1  // Minimum dosage quality threshold
+    
+    // PRS parameters
+    prs_method = "standard"  // standard or prscs
+    prs_standardization = true  // Whether to standardize PRS scores
+    
+    // PRS clumping/thresholding parameters
+    clump_p1 = 0.05         // p-value threshold for index SNPs
+    clump_r2 = 0.1          // LD r^2 threshold for clumping
+    clump_kb = 250          // Window size (kb) for clumping
+    // (Add more PRS-CS/LDpred2 parameters here if needed)
+    
+    // Resource parameters
+    max_memory = '8 GB'
+    max_cpus = 4
+    max_time = '24h'
+}
+
+process {
+    // Default resource limits
+    memory = { task.memory ?: params.max_memory }
+    cpus = { task.cpus ?: params.max_cpus }
+    time = { task.time ?: params.max_time }
+    
+    // Error handling
+    errorStrategy = 'terminate'
+    maxRetries = 3
+    
+    // Docker configuration
+    withLabel: 'docker' {
+        container = 'broadinstitute/hail:0.2.127'
+        docker.enabled = true
+        docker.volumes = ['/Users/']
+    }
+}
+
+// Report configuration
+report {
+    enabled = true
+    file = "${params.output_dir}/pipeline_report.html"
+} 

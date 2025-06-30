@@ -1,0 +1,231 @@
+# GWAS Quality Control and PRS Analysis Report
+
+## Executive Summary
+
+{{ commentary }}
+
+## 1. Introduction
+
+### 1.1 Study Overview
+This report presents the results of the GWAS Quality Control (QC) and Polygenic Risk Score (PRS) analysis pipeline. The analysis was performed on genotype data from {{ metrics.qc_metrics.sample_qc.n_samples }} samples and {{ metrics.qc_metrics.variant_qc.n_variants }} genetic variants.
+
+### 1.2 Analysis Pipeline
+The analysis was performed using the following pipeline:
+1. Sample and variant QC using Hail
+2. Population structure analysis
+3. PRS calculation and validation
+4. Automated report generation with AI-powered interpretation
+
+## 2. Quality Control Results
+
+### 2.1 Sample Quality Control
+
+#### 2.1.1 Sample Metrics
+| Metric | Value | Threshold | Status |
+|--------|-------|-----------|--------|
+| Call Rate | {% if metrics.qc_metrics.sample_qc.call_rate is defined %}{{ "%.3f"|format(metrics.qc_metrics.sample_qc.call_rate) }}{% else %}N/A{% endif %} | ≥ 0.95 | {% if metrics.qc_metrics.sample_qc.call_rate is defined and metrics.qc_metrics.sample_qc.call_rate >= 0.95 %}✅{% else %}❌{% endif %} |
+| Heterozygosity Rate | {% if metrics.qc_metrics.sample_qc.heterozygosity_rate is defined %}{{ "%.3f"|format(metrics.qc_metrics.sample_qc.heterozygosity_rate) }}{% else %}N/A{% endif %} | ±3 SD | {% if metrics.qc_metrics.sample_qc.heterozygosity_rate is defined and metrics.qc_metrics.sample_qc.heterozygosity_rate is within_range %}✅{% else %}❌{% endif %} |
+| Number of Heterozygous Variants | {{ metrics.qc_metrics.sample_qc.n_het|default('N/A') }} | - | - |
+| Number of Homozygous Reference Variants | {{ metrics.qc_metrics.sample_qc.n_hom_ref|default('N/A') }} | - | - |
+| Number of Homozygous Alternative Variants | {{ metrics.qc_metrics.sample_qc.n_hom_var|default('N/A') }} | - | - |
+| Number of Singletons | {{ metrics.qc_metrics.sample_qc.n_singleton|default('N/A') }} | - | - |
+| Transition/Transversion Ratio | {% if metrics.qc_metrics.sample_qc.r_ti_tv is defined %}{{ "%.3f"|format(metrics.qc_metrics.sample_qc.r_ti_tv) }}{% else %}N/A{% endif %} | ~2.0-2.1 | {% if metrics.qc_metrics.sample_qc.r_ti_tv is defined and metrics.qc_metrics.sample_qc.r_ti_tv >= 2.0 and metrics.qc_metrics.sample_qc.r_ti_tv <= 2.1 %}✅{% else %}❌{% endif %} |
+
+#### 2.1.2 Sample QC Visualizations
+![Sample Call Rate Distribution]({{ metrics.figures.quality_metrics }})
+
+### 2.2 Variant Quality Control
+
+#### 2.2.1 Variant Metrics
+| Metric | Value | Threshold | Status |
+|--------|-------|-----------|--------|
+| Call Rate | {% if metrics.qc_metrics.variant_qc.call_rate is defined %}{{ "%.3f"|format(metrics.qc_metrics.variant_qc.call_rate) }}{% else %}N/A{% endif %} | ≥ 0.95 | {% if metrics.qc_metrics.variant_qc.call_rate is defined and metrics.qc_metrics.variant_qc.call_rate >= 0.95 %}✅{% else %}❌{% endif %} |
+| Minor Allele Frequency | {% if metrics.qc_metrics.variant_qc.allele_frequency is defined %}{{ "%.3f"|format(metrics.qc_metrics.variant_qc.allele_frequency) }}{% else %}N/A{% endif %} | ≥ 0.01 | {% if metrics.qc_metrics.variant_qc.allele_frequency is defined and metrics.qc_metrics.variant_qc.allele_frequency >= 0.01 %}✅{% else %}❌{% endif %} |
+| Hardy-Weinberg Equilibrium | {% if metrics.qc_metrics.variant_qc.hwe_pvalue is defined %}{{ "%.2e"|format(metrics.qc_metrics.variant_qc.hwe_pvalue) }}{% else %}N/A{% endif %} | ≥ 1e-6 | {% if metrics.qc_metrics.variant_qc.hwe_pvalue is defined and metrics.qc_metrics.variant_qc.hwe_pvalue >= 1e-6 %}✅{% else %}❌{% endif %} |
+| Dosage Quality | {% if metrics.qc_metrics.dosage_qc.avg_quality is defined and metrics.qc_metrics.dosage_qc.avg_quality > 0 %}{{ "%.3f"|format(metrics.qc_metrics.dosage_qc.avg_quality) }}{% else %}N/A{% endif %} | ≥ 0.8 | {% if metrics.qc_metrics.dosage_qc.avg_quality is defined and metrics.qc_metrics.dosage_qc.avg_quality > 0.8 %}✅{% elif metrics.qc_metrics.dosage_qc.avg_quality is defined and metrics.qc_metrics.dosage_qc.avg_quality > 0 %}❌{% else %}N/A{% endif %} |
+
+#### 2.2.2 Variant QC Visualizations
+{% if metrics.qc_metrics.dosage_qc.avg_quality == 0 or metrics.qc_metrics.dosage_qc.avg_quality is not defined %}
+_Note: Dosage QC metrics are not available or not applicable for this dataset._
+{% else %}
+![Dosage Distribution]({{ metrics.figures.dosage_distribution }})
+{% endif %}
+
+### 2.3 Population Structure
+
+#### 2.3.1 Principal Component Analysis
+{% if metrics.qc_metrics.pca is defined and metrics.qc_metrics.pca.explained_variance is defined %}
+| Principal Component | Variance Explained |
+|:-------------------:|:-----------------:|
+{% for i in range(metrics.qc_metrics.pca.explained_variance|length) %}
+| PC{{ '%2d' % (i + 1) }} | {{ '%.3f'|format(metrics.qc_metrics.pca.explained_variance[i]) }}% |
+{% endfor %}
+{% else %}
+PCA data not available.
+{% endif %}
+
+#### 2.3.2 Population Structure Visualization
+![PCA Plot]({{ metrics.figures.pca_plot }})
+
+## 3. Polygenic Risk Score Analysis
+
+### 3.1 PRS Performance Metrics
+
+{% if metrics.prs_metrics.auc is defined %}
+#### 3.1.1 Binary Trait Performance
+| Metric | Value | Interpretation |
+|--------|-------|----------------|
+| Area Under ROC Curve (AUC) | {{ "%.3f"|format(metrics.prs_metrics.auc) }} | {% if metrics.prs_metrics.auc >= 0.7 %}Good{% elif metrics.prs_metrics.auc >= 0.6 %}Moderate{% else %}Poor{% endif %} |
+{% endif %}
+
+{% if metrics.prs_metrics.r2 is defined %}
+#### 3.1.2 Continuous Trait Performance
+| Metric | Value | Interpretation |
+|--------|-------|----------------|
+| R² Score | {{ "%.3f"|format(metrics.prs_metrics.r2) }} | {% if metrics.prs_metrics.r2 >= 0.1 %}Good{% elif metrics.prs_metrics.r2 >= 0.05 %}Moderate{% else %}Poor{% endif %} |
+{% endif %}
+
+### 3.2 PRS Distribution
+![PRS Distribution]({{ metrics.figures.prs_distribution }})
+
+### 3.3 PRS Detailed Metrics
+| Metric | Value |
+|--------|-------|
+| Sample Size | {{ metrics.prs_analysis.sample_size }} |
+| SNPs Used | {{ metrics.prs_analysis.snps_used }} |
+| Mean | {{ metrics.prs_analysis.mean }} |
+| Std | {{ metrics.prs_analysis.std }} |
+| Median | {{ metrics.prs_analysis.median }} |
+| Min | {{ metrics.prs_analysis.min }} |
+| Max | {{ metrics.prs_analysis.max }} |
+| Skewness | {{ metrics.prs_analysis.skewness }} |
+| Kurtosis | {{ metrics.prs_analysis.kurtosis }} |
+| Shapiro-Wilk Statistic | {{ metrics.prs_analysis.shapiro_stat }} |
+| Shapiro-Wilk p-value | {{ metrics.prs_analysis.shapiro_p }} |
+| 1st Percentile | {{ metrics.prs_analysis.percentile_1 }} |
+| 5th Percentile | {{ metrics.prs_analysis.percentile_5 }} |
+| 10th Percentile | {{ metrics.prs_analysis.percentile_10 }} |
+| 25th Percentile | {{ metrics.prs_analysis.percentile_25 }} |
+| 50th Percentile | {{ metrics.prs_analysis.percentile_50 }} |
+| 75th Percentile | {{ metrics.prs_analysis.percentile_75 }} |
+| 90th Percentile | {{ metrics.prs_analysis.percentile_90 }} |
+| 95th Percentile | {{ metrics.prs_analysis.percentile_95 }} |
+| 99th Percentile | {{ metrics.prs_analysis.percentile_99 }} |
+
+### 3.4 Population Stratification and PRS
+![Population Stratification]({{ metrics.figures.population_stratification }})
+
+## 4. Clumping and Variant Filtering
+
+### 4.1 Clumping Summary
+| Parameter | Value |
+|-----------|-------|
+| Variants Before Clumping | {{ metrics.clumping_summary.variants_before|default('N/A') }} |
+| Variants After Clumping | {{ metrics.clumping_summary.variants_after|default('N/A') }} |
+| --clump-p1 | {{ metrics.clumping_summary.clump_p1|default('N/A') }} |
+| --clump-r2 | {{ metrics.clumping_summary.clump_r2|default('N/A') }} |
+| --clump-kb | {{ metrics.clumping_summary.clump_kb|default('N/A') }} |
+
+{% if metrics.clumping_summary.notes %}
+**Notes:**
+{% for note in metrics.clumping_summary.notes %}- {{ note }}
+{% endfor %}
+{% endif %}
+{% if metrics.clumping_summary.warnings %}
+**Warnings:**
+{% for warning in metrics.clumping_summary.warnings %}- {{ warning }}
+{% endfor %}
+{% endif %}
+
+### 4.2 Variant Flowchart
+
+{% if flowchart_img_exists %}
+![Variant Flowchart]({{ flowchart_img_path }})
+{% else %}
+> **To visualize the flowchart below, copy the code block into [Mermaid Live Editor](https://mermaid.live/) or a compatible Markdown viewer.**
+
+```mermaid
+{{ metrics.variant_flowchart }}
+```
+{% endif %}
+
+## 5. Discussion
+
+### 5.1 Data Quality Assessment
+{% if metrics.qc_metrics.sample_qc.call_rate < 0.95 %}
+- **Sample Quality**: The sample call rate is below the recommended threshold of 95%. This may indicate issues with sample quality or genotyping.
+{% else %}
+- **Sample Quality**: The sample call rate is within acceptable range, indicating good sample quality.
+{% endif %}
+
+{% if metrics.qc_metrics.variant_qc.call_rate < 0.95 %}
+- **Variant Quality**: The variant call rate is below the recommended threshold of 95%. This may indicate issues with variant calling or genotyping.
+{% else %}
+- **Variant Quality**: The variant call rate is within acceptable range, indicating good variant quality.
+{% endif %}
+
+### 5.2 PRS Performance Assessment
+{% if metrics.prs_metrics.auc is defined %}
+- **PRS Performance**: The PRS shows {% if metrics.prs_metrics.auc >= 0.7 %}good{% elif metrics.prs_metrics.auc >= 0.6 %}moderate{% else %}poor{% endif %} predictive performance for the binary trait.
+{% endif %}
+
+{% if metrics.prs_metrics.r2 is defined %}
+- **PRS Performance**: The PRS shows {% if metrics.prs_metrics.r2 >= 0.1 %}good{% elif metrics.prs_metrics.r2 >= 0.05 %}moderate{% else %}poor{% endif %} predictive performance for the continuous trait.
+{% endif %}
+
+### 5.3 Recommendations
+1. **Sample Quality**:
+   {% if metrics.qc_metrics.sample_qc.call_rate is defined and metrics.qc_metrics.sample_qc.call_rate < 0.95 %}
+   - Consider removing samples with call rates below 95%
+   {% else %}
+   - Sample call rates are within acceptable range
+   {% endif %}
+
+2. **Variant Quality**:
+   {% if metrics.qc_metrics.variant_qc.call_rate is defined and metrics.qc_metrics.variant_qc.call_rate < 0.95 %}
+   - Consider removing variants with call rates below 95%
+   {% else %}
+   - Variant call rates are within acceptable range
+   {% endif %}
+
+3. **Population Structure**:
+   {% if metrics.qc_metrics.pca is defined and metrics.qc_metrics.pca.explained_variance is defined and metrics.qc_metrics.pca.explained_variance|length > 0 and metrics.qc_metrics.pca.explained_variance[0] > 0.1 %}
+   - Significant population stratification detected, consider using mixed models
+   {% else %}
+   - Population stratification appears minimal or data not available
+   {% endif %}
+
+4. **PRS Performance**:
+   {% if metrics.prs_metrics.auc is defined %}
+   {% if metrics.prs_metrics.auc < 0.7 %}
+   - PRS performance is below typical thresholds, consider:
+     - Increasing training sample size
+     - Improving variant selection
+     - Using cross-population methods
+   {% else %}
+   - PRS performance is within acceptable range
+   {% endif %}
+   {% endif %}
+
+## 6. Technical Appendix
+
+### 6.1 Quality Control Thresholds
+- Sample Call Rate: ≥ 95%
+- Variant Call Rate: ≥ 95%
+- Minor Allele Frequency: ≥ 1%
+- Hardy-Weinberg Equilibrium: p ≥ 1e-6
+- Heterozygosity Rate: within 3 SD of mean
+
+### 6.2 Software Versions
+- Hail: 0.2.127
+- Python: 3.9.0
+- PRS-CS: 1.0.0
+
+### 6.3 Pipeline Parameters
+```yaml
+{{ metrics.pipeline_parameters | to_yaml }}
+```
+
+---
+
+*Report generated on {{ date }} using version {{ version }} of the pipeline.* 

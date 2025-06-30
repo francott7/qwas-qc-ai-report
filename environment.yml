@@ -1,0 +1,20 @@
+name: gwas-qc-report
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11
+  - hail=0.2
+  - plink2
+  - jinja2
+  - matplotlib
+  - openai
+  - pandas
+  - numpy
+  - pytest
+  - nextflow
+  - pip
+  - pip:
+    - prscs
+    - prscsx 
